@@ -1,39 +1,69 @@
+
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Urdu PhotoCraft</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#111;color:#fff;font-family:sans-serif;text-align:center}
-.top{padding:20px;background:#1e1e1e;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.top input[type="text"]{padding:14px;font-size:22px;width:300px;border-radius:10px;border:1px solid #444;background:#2a2a2a;color:#fff;font-family:'Noto Nastaliq Urdu',serif}
-button{padding:12px 20px;border-radius:10px;border:none;font-weight:bold;cursor:pointer}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:sans-serif;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+header{padding:12px 20px;display:flex;justify-content:space-between;background:#0f0f0f;border-bottom:1px solid #222;align-items:center}
+header .left{font-size:12px;opacity:0.5}
+header .right{font-size:20px;font-weight:bold}
+.toolbar{background:#0f0f0f;padding:12px;display:flex;gap:10px;justify-content:center;align-items:center;border-bottom:1px solid #222}
+.toolbar button{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:bold;font-family:'Noto Nastaliq Urdu',serif}
 .btn-blue{background:#0ea5e9;color:#fff}
 .btn-green{background:#22c55e;color:#fff}
-canvas{background:#0f0f0f;margin:20px auto;display:block;border-radius:15px;max-width:95%}
+.btn-gray{background:#2a2a2a;color:#fff}
+.toolbar input[type="text"]{padding:8px 12px;border-radius:8px;border:1px solid #333;background:#1e1e1e;color:#fff;width:200px;font-family:'Noto Nastaliq Urdu',serif;font-size:18px}
+.toolbar input[type="color"]{width:40px;height:32px;border:none;background:transparent}
+.toolbar input[type="range"]{width:120px}
+.main{flex:1;display:flex;overflow:hidden}
+.sidebar{width:140px;background:#0a0a0a;border-left:1px solid #222;padding:10px;overflow-y:auto}
+.tpl{padding:12px 8px;background:#151515;margin:6px 0;border-radius:8px;cursor:pointer;text-align:center;font-family:'Noto Nastaliq Urdu',serif;font-size:18px;border:1px solid transparent}
+.tpl:hover{background:#222;border-color:#333}
+.canvas-area{flex:1;background:#0a0a0a;display:flex;justify-content:center;align-items:center;padding:20px}
+#myCanvas{background:#0f0f0f;border-radius:12px;box-shadow:0 0 40px rgba(0,0,0,0.8);max-width:100%;max-height:80vh}
 </style>
 </head>
 <body>
-<h1 style="font-family:'Noto Nastaliq Urdu',serif;margin:20px">🎨 Urdu PhotoCraft - خان</h1>
 
-<div class="top">
-<input id="urduInput" type="text" value="خان" placeholder="یہاں لکھیں">
-<button class="btn-blue" onclick="drawText()">✏️ لکھیں</button>
-<input id="color" type="color" value="#f5c97a" onchange="drawText()">
-<input id="size" type="range" min="30" max="150" value="90" oninput="drawText()">
-<button class="btn-green" onclick="saveImage()">💾 محفوظ کریں</button>
+<header>
+<div class="left">Free • Browser • Nastaleeq</div>
+<div class="right">Urdu PhotoCraft</div>
+</header>
+
+<div class="toolbar">
+  <button class="btn-blue" onclick="addText()">+ متن شامل کریں</button>
+  <input id="size" type="range" min="20" max="200" value="90" oninput="draw()">
+  <input id="color" type="color" value="#f5c97a" oninput="draw()">
+  <input id="textInput" type="text" value="خان" placeholder="یہاں لکھیں">
+  <button class="btn-green" onclick="saveImg()">💾 محفوظ کریں</button>
+  <button class="btn-gray" onclick="clearCanvas()">🗑️ صاف</button>
 </div>
 
-<canvas id="myCanvas" width="900" height="600"></canvas>
+<div class="main">
+  <div class="canvas-area">
+    <canvas id="myCanvas" width="800" height="550"></canvas>
+  </div>
+  <div class="sidebar">
+    <div class="tpl" onclick="setTpl('خان')">👑 خان</div>
+    <div class="tpl" onclick="setTpl('پاکستان زندہ باد')">🇵🇰 زندہ باد</div>
+    <div class="tpl" onclick="setTpl('عید مبارک')">🌙 عید مبارک</div>
+    <div class="tpl" onclick="setTpl('دل سے')">❤️ دل سے</div>
+    <div class="tpl" onclick="setTpl('لاہور')">لاہور</div>
+    <div class="tpl" onclick="setTpl('محبت')">محبت</div>
+  </div>
+</div>
 
 <script>
 const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
-const input = document.getElementById('urduInput');
+const input = document.getElementById('textInput');
 
-function drawText(){
+function draw(){
   const text = input.value || 'خان';
   const color = document.getElementById('color').value;
   const size = document.getElementById('size').value;
@@ -42,21 +72,33 @@ function drawText(){
   ctx.fillRect(0,0,canvas.width,canvas.height);
   
   ctx.fillStyle = color;
-  ctx.font = `bold ${size}px 'Noto Nastaliq Urdu', serif`;
+  ctx.font = `700 ${size}px 'Noto Nastaliq Urdu', serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(text, 450, 300);
+  
+  // glow
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 15;
+  ctx.fillText(text, canvas.width/2, canvas.height/2);
+  ctx.shadowBlur = 0;
 }
 
-function saveImage(){
-  const link = document.createElement('a');
-  link.download = 'urdu-' + Date.now() + '.png';
-  link.href = canvas.toDataURL();
-  link.click();
+function setTpl(t){ input.value=t; draw(); }
+function addText(){ draw(); }
+function clearCanvas(){ ctx.fillStyle='#0f0f0f'; ctx.fillRect(0,0,canvas.width,canvas.height); }
+function saveImg(){
+  const a=document.createElement('a');
+  a.download='urdu-'+Date.now()+'.png';
+  a.href=canvas.toDataURL('image/png');
+  a.click();
 }
 
-window.onload = drawText;
-input.addEventListener('input', drawText);
+window.onload = draw;
+input.addEventListener('input', draw);
 </script>
+
 </body>
 </html>
+
+
+Ho jaye to screenshot bhejo, main check kar leta hun.
