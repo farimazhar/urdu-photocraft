@@ -1,62 +1,150 @@
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urdu PhotoCraft</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@700&display=swap" rel="stylesheet">
-<style>
-body{margin:0;background:#111;color:#fff;font-family:sans-serif;text-align:center}
-.top{padding:20px;background:#1e1e1e;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.top input[type="text"]{padding:14px;font-size:22px;width:300px;border-radius:10px;border:1px solid #444;background:#2a2a2a;color:#fff;font-family:'Noto Nastaliq Urdu',serif}
-button{padding:12px 20px;border-radius:10px;border:none;font-weight:bold;cursor:pointer}
-.btn-blue{background:#0ea5e9;color:#fff}
-.btn-green{background:#22c55e;color:#fff}
-canvas{background:#0f0f0f;margin:20px auto;display:block;border-radius:15px;max-width:95%}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Urdu PhotoCraft Studio 2.0</title>
+  <meta name="description" content="Professional Urdu Graphic Design Studio & Photoshop for Urdu typography, calligraphy, and poetry cards.">
+  <link rel="stylesheet" href="./apptheme/theme.css">
 </head>
 <body>
-<h1 style="font-family:'Noto Nastaliq Urdu',serif;margin:20px">🎨 Urdu PhotoCraft - خان</h1>
+  <div class="studio-app" id="studioApp">
+    
+    <!-- ==================== TOP NAVIGATION BAR ==================== -->
+    <header class="studio-topbar">
+      <div class="topbar-left">
+        <div class="brand-badge" id="brandHome">
+          <div class="brand-icon">🎨</div>
+          <div class="brand-text">
+            <span class="brand-title" data-i18n="appTitle">Urdu PhotoCraft</span>
+            <span class="brand-urdu" data-i18n="appSubtitle">اردو فوٹو کرافٹ</span>
+          </div>
+        </div>
 
-<div class="top">
-<input id="urduInput" type="text" value="خان" placeholder="یہاں لکھیں">
-<button class="btn-blue" onclick="drawText()">✏️ لکھیں</button>
-<input id="color" type="color" value="#f5c97a" onchange="drawText()">
-<input id="size" type="range" min="30" max="150" value="90" oninput="drawText()">
-<button class="btn-green" onclick="saveImage()">💾 محفوظ کریں</button>
-</div>
+        <!-- Canvas Preset Selector -->
+        <select class="input-select" id="canvasPresetSelector" style="width: 190px;" title="Canvas Preset">
+          <!-- Populated by JS -->
+        </select>
+      </div>
 
-<canvas id="myCanvas" width="900" height="600"></canvas>
+      <!-- Top Center Controls: History & Quick Actions -->
+      <div class="topbar-center">
+        <button class="btn btn-icon" id="undoBtn" data-i18n-title="undoTooltip" title="Undo (Ctrl+Z)" disabled>↶</button>
+        <button class="btn btn-icon" id="redoBtn" data-i18n-title="redoTooltip" title="Redo (Ctrl+Y)" disabled>↷</button>
 
-<script>
-const canvas = document.getElementById('myCanvas');
-const ctx = canvas.getContext('2d');
-const input = document.getElementById('urduInput');
+        <div style="width: 1px; height: 24px; background: var(--border-subtle); margin: 0 4px;"></div>
 
-function drawText(){
-  const text = input.value || 'خان';
-  const color = document.getElementById('color').value;
-  const size = document.getElementById('size').value;
-  
-  ctx.fillStyle = '#0f0f0f';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-  
-  ctx.fillStyle = color;
-  ctx.font = `bold ${size}px 'Noto Nastaliq Urdu', serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(text, 450, 300);
-}
+        <button class="btn btn-secondary" id="openPoetryBtn" data-i18n="poetryLibBtn">
+          📜 اشعار لائبریری
+        </button>
 
-function saveImage(){
-  const link = document.createElement('a');
-  link.download = 'urdu-' + Date.now() + '.png';
-  link.href = canvas.toDataURL();
-  link.click();
-}
+        <button class="btn btn-secondary" id="addTextQuickBtn" data-i18n="addTextBtn">
+          ✍️ نیا متن
+        </button>
+      </div>
 
-window.onload = drawText;
-input.addEventListener('input', drawText);
-</script>
+      <!-- Top Right Controls: Language, Theme & Export -->
+      <div class="topbar-right">
+        <!-- Language Switcher Button -->
+        <button class="lang-toggle-btn" id="langSwitchBtn" data-i18n-title="langToggleTitle" title="Switch Language">
+          <span id="langSwitchLabel">🌐 English</span>
+        </button>
+
+        <!-- Theme Switcher Button -->
+        <button class="btn btn-secondary theme-switch-btn" id="themeSwitchBtn" title="Theme">
+          <span class="theme-pill-dot" id="themePillDot"></span>
+          <span id="themeNameLabel">ڈارک اسٹوڈیو</span>
+        </button>
+
+        <!-- Export & Save Button -->
+        <button class="btn btn-primary" id="openExportBtn" data-i18n="exportBtn">
+          💾 محفوظ کریں
+        </button>
+      </div>
+    </header>
+
+    <!-- ==================== MAIN WORKBENCH ==================== -->
+    <main class="studio-main">
+      
+      <!-- LEFT TOOLBAR -->
+      <aside class="studio-toolbar-left" id="studioLeftToolbar">
+        <button class="tool-tab-btn active" data-tool="text" title="Text Tool">
+          <span class="tab-icon">✍️</span>
+          <span data-i18n="toolText">متن</span>
+        </button>
+
+        <button class="tool-tab-btn" data-tool="poetry" title="Poetry Library">
+          <span class="tab-icon">📜</span>
+          <span data-i18n="toolPoetry">شاعری</span>
+        </button>
+
+        <button class="tool-tab-btn" data-tool="calligraphy" title="Calligraphy Stamps">
+          <span class="tab-icon">✨</span>
+          <span data-i18n="toolCalligraphy">خطاطی</span>
+        </button>
+
+        <button class="tool-tab-btn" data-tool="shapes" title="Shapes & Borders">
+          <span class="tab-icon">🔷</span>
+          <span data-i18n="toolShapes">اشکال</span>
+        </button>
+
+        <button class="tool-tab-btn" data-tool="background" title="Background Manager">
+          <span class="tab-icon">🖼️</span>
+          <span data-i18n="toolBackground">پس منظر</span>
+        </button>
+
+        <div class="toolbar-divider"></div>
+
+        <button class="tool-tab-btn" id="toggleUrduKbdBtn" title="Urdu Keyboard">
+          <span class="tab-icon">⌨️</span>
+          <span data-i18n="toolKeyboard">کی بورڈ</span>
+        </button>
+      </aside>
+
+      <!-- CENTER VIEWPORT & CANVAS -->
+      <section class="studio-viewport" id="viewportContainer">
+        <canvas id="studioCanvas" class="canvas-element" width="1080" height="1080"></canvas>
+
+        <!-- Floating Zoom & Fit Bar -->
+        <div class="viewport-floating-bar">
+          <button class="btn-icon btn-sm" id="zoomOutBtn" data-i18n-title="zoomOutBtn" title="Zoom Out">−</button>
+          <span class="zoom-indicator" id="zoomLevelIndicator">100%</span>
+          <button class="btn-icon btn-sm" id="zoomInBtn" data-i18n-title="zoomInBtn" title="Zoom In">+</button>
+          <button class="btn btn-secondary btn-sm" id="zoomFitBtn" data-i18n="zoomFitBtn">Fit</button>
+        </div>
+      </section>
+
+      <!-- RIGHT INSPECTOR & LAYERS PANEL -->
+      <aside class="studio-inspector">
+        <div class="inspector-tabs">
+          <button class="inspector-tab-btn active" id="tabBtnProperties" data-tab="properties" data-i18n="tabProperties">
+            ⚙️ ترتیبات (Properties)
+          </button>
+          <button class="inspector-tab-btn" id="tabBtnLayers" data-tab="layers" data-i18n="tabLayers">
+            📑 تہیں (Layers)
+          </button>
+        </div>
+
+        <div class="inspector-content">
+          <!-- Properties Panel Content -->
+          <div id="inspectorPropertiesView">
+            <!-- Dynamically populated according to active layer / tool -->
+          </div>
+
+          <!-- Layers Panel Content -->
+          <div id="inspectorLayersView" style="display: none;">
+            <div id="layerListContainer"></div>
+          </div>
+        </div>
+
+        <!-- Virtual Urdu Keyboard Mount Container -->
+        <div id="urduKeyboardMount"></div>
+      </aside>
+
+    </main>
+
+  </div>
+
+  <script type="module" src="./main.js"></script>
 </body>
 </html>

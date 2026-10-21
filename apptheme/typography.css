@@ -1,0 +1,52 @@
+/* ========================================================
+   URDU PHOTOCRAFT - TYPOGRAPHY & FONT SYSTEM
+   ======================================================== */
+
+/* Google Fonts & System Font Fallbacks */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Gulzar&family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Sans+Arabic:wght@400;600;700&family=Aref+Ruqaa:wght@400;700&display=swap');
+
+:root {
+  --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-nastaliq: 'Noto Nastaliq Urdu', serif;
+  --font-gulzar: 'Gulzar', serif;
+  --font-amiri: 'Amiri', serif;
+  --font-arabic-sans: 'Noto Sans Arabic', sans-serif;
+  --font-ruqaa: 'Aref Ruqaa', serif;
+}
+
+body {
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Urdu Typography Utilities */
+.urdu-font-nastaliq {
+  font-family: var(--font-nastaliq);
+  direction: rtl;
+  line-height: 2.2;
+}
+
+.urdu-font-gulzar {
+  font-family: var(--font-gulzar);
+  direction: rtl;
+  line-height: 1.8;
+}
+
+.urdu-font-amiri {
+  font-family: var(--font-amiri);
+  direction: rtl;
+  line-height: 1.7;
+}
+
+.urdu-font-sans {
+  font-family: var(--font-arabic-sans);
+  direction: rtl;
+  line-height: 1.6;
+}
+
+.urdu-font-ruqaa {
+  font-family: var(--font-ruqaa);
+  direction: rtl;
+  line-height: 1.7;
+}
