@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Urdu PhotoCraft</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111;color:#fff;font-family:'Noto Nastaliq Urdu',serif;display:flex;flex-direction:column;height:100vh}
+header{background:#1a1a1a;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333}
+.toolbar{background:#222;padding:10px 20px;display:flex;gap:10px;flex-wrap:wrap}
+.toolbar input,.toolbar select,.toolbar button{padding:8px 12px;border-radius:6px;border:none;background:#333;color:#fff}
+.toolbar button{background:#0ea5e9;cursor:pointer;font-weight:bold}
+.main{flex:1;display:flex;overflow:hidden}
+#canvas-wrapper{flex:1;display:flex;justify-content:center;align-items:center;background:#2b2b2b}
+canvas{box-shadow:0 0 30px rgba(0,0,0,0.5);background:#0f0f0f}
+.sidebar{width:200px;background:#1e1e1e;padding:15px}
+.template{padding:10px;background:#2a2a2a;margin:5px 0;border-radius:8px;cursor:pointer;text-align:center}
+.template:hover{background:#333}
+</style>
+</head>
+<body>
+<header>
+<h1>Urdu PhotoCraft 🎨</h1>
+<div>Free • Browser • Nastaleeq</div>
+</header>
+<div class="toolbar">
+<input id="urduText" type="text" value="محبت" style="width:220px;font-size:18px">
+<select id="fontSelect"><option>Noto Nastaliq Urdu</option><option>Amiri</option></select>
+<input id="fontSize" type="range" min="20" max="200" value="80">
+<input id="colorPicker" type="color" value="#f5c97a">
+<button onclick="addUrduText()">+ متن شامل کریں</button>
+<button onclick="downloadImage()" style="background:#22c55e">محفوظ کریں</button>
+</div>
+<div class="main">
+<div id="canvas-wrapper"><canvas id="c" width="900" height="600"></canvas></div>
+<div class="sidebar">
+<h3>ٹیمپلیٹس</h3>
+<div class="template" onclick="loadTemplate('عید مبارک')">🌙 عید مبارک</div>
+<div class="template" onclick="loadTemplate('شادی مبارک')">💍 شادی کارڈ</div>
+<div class="template" onclick="loadTemplate('جمعہ مبارک')">🕌 جمعہ مبارک</div>
+<div class="template" onclick="loadTemplate('محبت')">❤️ محبت</div>
+</div>
+</div>
+<script>
+const canvas=new fabric.Canvas('c',{backgroundColor:'#0f0f0f'});
+function addUrduText(){
+const txt=document.getElementById('urduText').value||'محبت';
+const size=parseInt(document.getElementById('fontSize').value);
+const color=document.getElementById('colorPicker').value;
+const t=new fabric.Text(txt,{left:300,top:250,fontFamily:'Noto Nastaliq Urdu',fontSize:size,fill:color});
+canvas.add(t).setActiveObject(t);
+}
+function loadTemplate(text){document.getElementById('urduText').value=text;addUrduText();}
+function downloadImage(){
+const link=document.createElement('a');link.download='urdu-photocraft.png';
+link.href=canvas.toDataURL({format:'png'});link.click();
+}
+addUrduText();
+</script>
+</body>
+</html>
