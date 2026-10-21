@@ -1,102 +1,18 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urdu PhotoCraft - Simple</title>
+<html dir="rtl">
+<head><meta charset="UTF-8">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@700&display=swap" rel="stylesheet">
-<style>
-body{margin:0;background:#111;color:#fff;font-family:sans-serif;text-align:center}
-.top{padding:20px;background:#1a1a1a;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
-.top input[type="text"]{padding:15px;font-size:22px;width:300px;border-radius:10px;border:none;font-family:'Noto Nastaliq Urdu',serif}
-button{padding:12px 20px;border-radius:10px;border:none;font-weight:bold;cursor:pointer;font-size:16px}
-#b1{background:#0ea5e9;color:#fff}
-#b2{background:#ef4444;color:#fff}
-#b3{background:#22c55e;color:#fff}
-#b4{background:#444;color:#fff}
-#myCanvas{background:#0f0f0f;margin:20px auto;display:block;border-radius:15px;box-shadow:0 0 30px #000;max-width:95%}
-#status{color:#aaa;font-size:14px}
-</style>
 </head>
-<body>
-<h1 style="font-family:'Noto Nastaliq Urdu',serif;margin:20px">🎨 Urdu PhotoCraft</h1>
-
-<div class="top">
-<input id="textInput" type="text" placeholder="یہاں لکھیں: خان" value="خان">
-<button id="b1" onclick="drawText()">✏️ لکھیں</button>
-<button id="b2" onclick="startVoice()">🎤 بولیں</button>
-<input id="color" type="color" value="#f5c97a" onchange="drawText()">
-<input id="size" type="range" min="30" max="150" value="80" oninput="drawText()">
-<span id="sizeLabel">80</span>
-<button id="b3" onclick="saveImage()">💾 محفوظ کریں</button>
-<button id="b4" onclick="clearCanvas()">🗑️ صاف</button>
-</div>
-
-<div id="status">Jo likhoge yahan neeche ayega</div>
-<canvas id="myCanvas" width="900" height="600"></canvas>
-
+<body style="background:#111;color:#fff;text-align:center;font-family:sans-serif">
+<input id="t" value="خان" style="padding:15px;font-size:24px;width:300px;margin:20px;font-family:'Noto Nastaliq Urdu'">
+<button onclick="draw()" style="padding:15px;background:#0ea5e9;color:#fff;border:none;border-radius:10px">لکھیں</button>
+<button onclick="voice()" style="padding:15px;background:red;color:#fff;border:none;border-radius:10px">🎤 بولیں</button>
+<br><canvas id="c" width="900" height="600" style="background:#000;border-radius:15px;max-width:95%"></canvas>
 <script>
-const canvas = document.getElementById('myCanvas');
-const ctx = canvas.getContext('2d');
-const input = document.getElementById('textInput');
-
-function drawText(){
-  const text = input.value || 'خان';
-  const color = document.getElementById('color').value;
-  const size = document.getElementById('size').value;
-  document.getElementById('sizeLabel').innerText = size;
-  
-  // Clear
-  ctx.fillStyle = '#0f0f0f';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-  
-  // Draw text center
-  ctx.fillStyle = color;
-  ctx.font = `bold ${size}px 'Noto Nastaliq Urdu', serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(text, canvas.width/2, canvas.height/2);
-  
-  // Shadow effect
-  ctx.shadowColor = color;
-  ctx.shadowBlur = 20;
-  ctx.fillText(text, canvas.width/2, canvas.height/2);
-  ctx.shadowBlur = 0;
-}
-
-function clearCanvas(){
-  ctx.fillStyle = '#0f0f0f';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-}
-
-function saveImage(){
-  const link = document.createElement('a');
-  link.download = 'urdu-khan-' + Date.now() + '.png';
-  link.href = canvas.toDataURL();
-  link.click();
-}
-
-// Voice
-let rec;
-function startVoice(){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ alert('Chrome me kholo'); return; }
-  rec = new SR();
-  rec.lang = 'ur-PK';
-  document.getElementById('status').innerText = '🎧 سن رہا ہوں... بولو';
-  rec.start();
-  rec.onresult = (e)=>{
-    const spoken = e.results[0][0].transcript;
-    input.value = spoken;
-    document.getElementById('status').innerText = 'لکھ دیا: ' + spoken;
-    drawText();
-  };
-  rec.onend = ()=>{ document.getElementById('status').innerText = 'Ho gaya!'; };
-}
-
-// Auto draw on load
-window.onload = drawText;
-input.addEventListener('input', drawText);
+const canvas=document.getElementById('c');const ctx=canvas.getContext('2d');
+function draw(){ctx.fillStyle='#000';ctx.fillRect(0,0,900,600);ctx.fillStyle='#f5c97a';ctx.font="bold 90px 'Noto Nastaliq Urdu'";ctx.textAlign='center';ctx.fillText(document.getElementById('t').value,450,300)}
+function voice(){let r=new (window.SpeechRecognition||window.webkitSpeechRecognition)();r.lang='ur-PK';r.start();r.onresult=e=>{document.getElementById('t').value=e.results[0][0].transcript;draw()}}
+draw()
 </script>
 </body>
 </html>
