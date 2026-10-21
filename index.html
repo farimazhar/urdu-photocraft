@@ -3,112 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urdu PhotoCraft - Khan Edition</title>
+<title>Urdu PhotoCraft + Voice</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#0a0a0a;color:#fff;font-family:sans-serif;display:flex;flex-direction:column;height:100vh}
-header{background:#151515;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #333}
+header{background:#151515;padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
 header h1{font-family:'Noto Nastaliq Urdu',serif}
-.toolbar{background:#1e1e1e;padding:15px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #333}
-.toolbar input[type="text"]{padding:12px 15px;border-radius:8px;border:1px solid #444;background:#2a2a2a;color:#fff;font-size:20px;font-family:'Noto Nastaliq Urdu',serif;width:300px}
-.toolbar button{padding:12px 20px;border-radius:8px;border:none;cursor:pointer;font-weight:bold;font-size:14px}
+.toolbar{background:#1e1e1e;padding:15px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.toolbar input[type="text"]{padding:12px 15px;border-radius:8px;border:1px solid #444;background:#2a2a2a;color:#fff;font-size:20px;font-family:'Noto Nastaliq Urdu',serif;width:280px}
+.toolbar button{padding:12px 18px;border-radius:8px;border:none;cursor:pointer;font-weight:bold}
 .btn-blue{background:#0ea5e9;color:white}
 .btn-green{background:#22c55e;color:white}
-.btn-red{background:#333;color:white}
+.btn-mic{background:#ef4444;color:white;animation:none}
+.btn-mic.listening{animation:pulse 1s infinite;background:#dc2626}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
 .main{flex:1;display:flex;overflow:hidden}
-#canvas-wrapper{flex:1;display:flex;justify-content:center;align-items:center;background:radial-gradient(#2a2a2a,#111);padding:20px}
-canvas{box-shadow:0 0 50px rgba(0,0,0,0.8);border-radius:8px}
-.sidebar{width:180px;background:#151515;padding:15px;border-left:1px solid #333}
-.template{padding:12px;background:#252525;margin:8px 0;border-radius:8px;cursor:pointer;text-align:center;font-family:'Noto Nastaliq Urdu',serif;transition:0.2s}
-.template:hover{background:#333;transform:scale(1.05)}
-</style>
-</head>
-<body>
-<header>
-<h1>🎨 Urdu PhotoCraft</h1>
-<div style="font-size:13px;opacity:0.6">Free • Browser • Nastaleeq</div>
-</header>
-
-<div class="toolbar">
-<input id="urduInput" type="text" placeholder="یہاں لکھیں... مثلا: خان" value="خان">
-<button class="btn-blue" onclick="addText()">+ متن شامل کریں</button>
-<input id="fontSize" type="range" min="20" max="200" value="90" oninput="updateActive()">
-<input id="colorPicker" type="color" value="#f5c97a" oninput="updateActive()">
-<button class="btn-green" onclick="downloadImage()">💾 محفوظ کریں</button>
-<button class="btn-red" onclick="clearCanvas()">🗑️ صاف</button>
-</div>
-
-<div class="main">
-<div id="canvas-wrapper"><canvas id="c" width="900" height="600"></canvas></div>
-<div class="sidebar">
-<h3 style="margin-bottom:10px;font-family:'Noto Nastaliq Urdu',serif">ٹیمپلیٹس</h3>
-<div class="template" onclick="setTemplate('عید مبارک')">🌙 عید مبارک</div>
-<div class="template" onclick="setTemplate('خان')">👑 خان</div>
-<div class="template" onclick="setTemplate('شادی مبارک')">💍 شادی کارڈ</div>
-<div class="template" onclick="setTemplate('جمعہ مبارک')">🕌 جمعہ مبارک</div>
-<div class="template" onclick="setTemplate('محبت')">❤️ محبت</div>
-</div>
-</div>
-
-<script>
-const canvas = new fabric.Canvas('c',{backgroundColor:'#0f0f0f'});
-canvas.preserveObjectStacking = true;
-
-function addText(){
-  const txt = document.getElementById('urduInput').value || 'خان';
-  const size = parseInt(document.getElementById('fontSize').value);
-  const color = document.getElementById('colorPicker').value;
-  const t = new fabric.Textbox(txt,{
-    left:150, top:200, width:600,
-    fontFamily:'Noto Nastaliq Urdu',
-    fontSize:size, fill:color,
-    textAlign:'center', editable:true,
-    fontWeight:'700'
-  });
-  canvas.add(t);
-  canvas.setActiveObject(t);
-  canvas.renderAll();
-}
-
-function setTemplate(text){
-  document.getElementById('urduInput').value = text;
-  addText();
-}
-
-function updateActive(){
-  const active = canvas.getActiveObject();
-  if(active){
-    active.set('fontSize', parseInt(document.getElementById('fontSize').value));
-    active.set('fill', document.getElementById('colorPicker').value);
-    canvas.renderAll();
-  }
-}
-
-function downloadImage(){
-  const link = document.createElement('a');
-  link.download = 'urdu-' + Date.now() + '.png';
-  link.href = canvas.toDataURL({format:'png',quality:1});
-  link.click();
-}
-
-function clearCanvas(){
-  canvas.clear();
-  canvas.backgroundColor = '#0f0f0f';
-  canvas.renderAll();
-}
-
-// Pehle se ek text
-addText();
-
-// Delete key se delete
-document.addEventListener('keydown',(e)=>{
-  if(e.key==='Delete'){
-    const active = canvas.getActiveObjects();
-    if(active){ canvas.remove(...active); canvas.discardActiveObject().renderAll(); }
-  }
-});
-</script>
-</body>
-</html>
+#canvas-wrapper{flex:1;display:flex;justify-content:center;align-items:center;background:#222;padding:20px}
+canvas{box-shadow:0 0 50px rgba(0,0,0,0.8)}
+.sidebar{width:180px;background:#151515;padding:
