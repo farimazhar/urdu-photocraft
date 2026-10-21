@@ -3,23 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urdu PhotoCraft + Voice</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+<title>Urdu PhotoCraft - Simple</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a0a;color:#fff;font-family:sans-serif;display:flex;flex-direction:column;height:100vh}
-header{background:#151515;padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
-header h1{font-family:'Noto Nastaliq Urdu',serif}
-.toolbar{background:#1e1e1e;padding:15px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.toolbar input[type="text"]{padding:12px 15px;border-radius:8px;border:1px solid #444;background:#2a2a2a;color:#fff;font-size:20px;font-family:'Noto Nastaliq Urdu',serif;width:280px}
-.toolbar button{padding:12px 18px;border-radius:8px;border:none;cursor:pointer;font-weight:bold}
-.btn-blue{background:#0ea5e9;color:white}
-.btn-green{background:#22c55e;color:white}
-.btn-mic{background:#ef4444;color:white;animation:none}
-.btn-mic.listening{animation:pulse 1s infinite;background:#dc2626}
-@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
-.main{flex:1;display:flex;overflow:hidden}
-#canvas-wrapper{flex:1;display:flex;justify-content:center;align-items:center;background:#222;padding:20px}
-canvas{box-shadow:0 0 50px rgba(0,0,0,0.8)}
-.sidebar{width:180px;background:#151515;padding:
+body{margin:0;background:#111;color:#fff;font-family:sans-serif;text-align:center}
+.top{padding:20px;background:#1a1a1a;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.top input[type="text"]{padding:15px;font-size:22px;width:300px;border-radius:10px;border:none;font-family:'Noto Nastaliq Urdu',serif}
+button{padding:12px 20px;border-radius:10px;border:none;font-weight:bold;cursor:pointer;font-size:16px}
+#b1{background:#0ea5e9;color:#fff}
+#b2{background:#ef4444;color:#fff}
+#b3{background:#22c55e;color:#fff}
+#b4{background:#444;color:#fff}
+#myCanvas{background:#0f0f0f;margin:20px auto;display:block;border-radius:15px;box-shadow:0 0 30px #000;max-width:95%}
+#status{color:#aaa;font-size:14px}
+</style>
+</head>
+<body>
+<h1 style="font-family:'Noto Nastaliq Urdu',serif;margin:20px">🎨 Urdu PhotoCraft</h1>
+
+<div class="top">
+<input id="textInput" type="text" placeholder="یہاں لکھیں: خان" value="خان">
+<button id="b1" onclick="drawText()">✏️ لکھیں</button>
+<button id="b2" onclick="startVoice()">🎤 بولیں</button>
+<input id="color" type="color" value="#f5c97a" onchange="drawText()">
+<input id="size" type="range" min="30" max="150" value="80" oninput="drawText()">
+<span id="sizeLabel">80</span>
+<button id="b3" onclick="saveImage()">💾 محفوظ کریں</button>
+<button id="b4" onclick="clearCanvas()">🗑️ صاف</button>
+</div>
+
+<div id="status">Jo likhoge yahan neeche ayega</div>
+<canvas id="myCanvas" width="900" height="600"></canvas>
+
+<script>
+const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
+const input = document.getElementById('textInput');
+
+function drawText(){
+  const text = input.value || 'خان';
+  const color = document.getElementById('color').value;
+  const size = document.getElementById('size').value;
+  document.getElementById('sizeLabel').innerText = size;
+  
+  // Clear
+  ctx.fillStyle = '#0f0f0f';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  
+  // Draw text center
+  ctx.fillStyle = color;
+  ctx.font = `bold ${size}px 'Noto Nastaliq Urdu', serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, canvas.width/2, canvas.height/2);
+  
+  // Shadow effect
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 20;
+  ctx.fillText(text, canvas.width/2, canvas.height/2);
+  ctx.shadowBlur = 0;
+}
+
+function clearCanvas(){
+  ctx.fillStyle = '#0f0f0f';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+}
+
+function saveImage(){
+  const link = document.createElement('a');
+  link.download = 'urdu-khan-' + Date.now() + '.png';
+  link.href = canvas.toDataURL();
+  link.click();
+}
+
+// Voice
+let rec;
+function startVoice(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ alert('Chrome me kholo'); return; }
+  rec = new SR();
+  rec.lang = 'ur-PK';
+  document.getElementById('status').innerText = '🎧 سن رہا ہوں... بولو';
+  rec.start();
+  rec.onresult = (e)=>{
+    const spoken = e.results[0][0].transcript;
+    input.value = spoken;
+    document.getElementById('status').innerText = 'لکھ دیا: ' + spoken;
+    drawText();
+  };
+  rec.onend = ()=>{ document.getElementById('status').innerText = 'Ho gaya!'; };
+}
+
+// Auto draw on load
+window.onload = drawText;
+input.addEventListener('input', drawText);
+</script>
+</body>
+</html>
